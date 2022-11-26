@@ -25,6 +25,7 @@ pub(crate) fn installations_from_env(builds: &mut HashSet<Build>) -> Result<(), 
     Ok(())
 }
 
+#[cfg(not(target_family = "windows"))]
 pub(crate) fn scan_dir_for_builds(
     builds: &mut HashSet<Build>,
     path: PathBuf,
