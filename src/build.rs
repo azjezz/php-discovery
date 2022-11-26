@@ -66,7 +66,7 @@ pub struct Version {
 ///     major: 8,
 ///     minor: 2,
 ///     release: 0,
-///     extra: Some("RC6")
+///     extra: Some("RC6".to_string())
 /// };
 ///
 /// assert_eq!("8.2.0RC6", v.to_string());
