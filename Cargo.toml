@@ -2,7 +2,7 @@
 name = "php-discovery"
 version = "0.1.2"
 edition = "2021"
-description = "discover available PHP binaries in locale system."
+description = "discover available PHP builds in your locale system 🐘"
 readme = "README.md"
 repository = "https://github.com/azjezz/php-discovery"
 documentation = "https://docs.rs/php-discovery"
@@ -11,8 +11,6 @@ keywords = ["php", "discovery", "store", "finder"]
 exclude = ["/.github/*"]
 authors = ["Saif Eddin Gmati <azjezz@protonmail.com>"]
 license = "MIT OR Apache-2.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 glob = "0.3.0"
