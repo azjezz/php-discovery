@@ -17,6 +17,7 @@ pub(crate) fn exec<S: AsRef<OsStr> + Debug>(
     Ok(String::from_utf8_lossy(&output).trim().to_string())
 }
 
+#[doc(hidden)]
 #[macro_export]
 macro_rules! implement_from_for_enum {
     ($type:ty, $error:ty, $field:ident) => {

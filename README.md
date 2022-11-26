@@ -3,7 +3,7 @@
 PHP Discovery allows you to find all PHP builds within a system, with a simple call.
 
 [![Crates.io](https://img.shields.io/crates/v/php-discovery.svg)](https://crates.io/crates/php-discovery)
-[![Docs](https://docs.rs/php-discovery/badge.svg)](https://docs.rs/php-discovery/latest/php-discovery/)
+[![Docs](https://docs.rs/php-discovery/badge.svg)](https://docs.rs/php-discovery/)
 
 ## Usage
 

@@ -8,6 +8,7 @@ use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
 
+/// Discover all available PHP builds.
 pub fn discover() -> Result<Vec<build::Build>, error::DiscoveryError> {
     let mut builds: HashSet<build::Build> = HashSet::new();
 

@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use crate::error::InstallationError;
 use crate::utils::exec;
 
+/// Represents a PHP version.
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Version {
     pub major: u32,
@@ -51,6 +52,7 @@ impl ::std::fmt::Display for Version {
     }
 }
 
+/// Represents a PHP build.
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Build {
     pub version: Version,
