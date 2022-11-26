@@ -1,9 +1,50 @@
+use std::fmt::Display;
 use std::hash::Hash;
 use std::path::Path;
 use std::path::PathBuf;
 
 use crate::error::InstallationError;
 use crate::utils::exec;
+
+#[cfg(target_family = "windows")]
+/// Represents a PHP build architecture.
+///
+/// Note: this is only available on windows.
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub enum Architecture {
+    X86,
+    X64,
+    AArch64,
+}
+
+#[cfg(target_family = "windows")]
+/// Try to parse `Architecture` from a string.
+impl TryFrom<&str> for Architecture {
+    type Error = InstallationError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "x86" => Ok(Self::X86),
+            "x64" => Ok(Self::X64),
+            "arm64" => Ok(Self::AArch64),
+            _ => Err(InstallationError::FailedToRetrieveArch),
+        }
+    }
+}
+
+#[cfg(target_family = "windows")]
+/// Display `Architecture`.
+impl Display for Architecture {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = match self {
+            Architecture::X86 => "x86",
+            Architecture::X64 => "x64",
+            Architecture::AArch64 => "arm64",
+        };
+
+        write!(f, "{}", name)
+    }
+}
 
 /// Represents a PHP version.
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -14,7 +55,7 @@ pub struct Version {
     pub extra: Option<String>,
 }
 
-/// Convert `Version` into a string
+/// Display `Version`.
 ///
 /// Example:
 ///
@@ -39,7 +80,7 @@ pub struct Version {
 ///
 /// assert_eq!("7.4.11", v.to_string());
 /// ```
-impl ::std::fmt::Display for Version {
+impl Display for Version {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -62,6 +103,8 @@ pub struct Build {
     pub is_thread_safety_enabled: bool,
     pub php_api: u32,
     pub zend_api: u32,
+    #[cfg(target_family = "windows")]
+    pub architecture: Architecture,
 }
 
 impl Build {
@@ -73,7 +116,7 @@ impl Build {
 
         let directory = binary.parent().unwrap().to_path_buf();
         let version_string = exec(&binary, &["-r", VERSION_CODE])?;
-        let parts = version_string.split(".").collect::<Vec<&str>>();
+        let parts = version_string.split('.').collect::<Vec<&str>>();
         let version = Version {
             major: parts[0].parse().unwrap(),
             minor: parts[1].parse().unwrap(),
@@ -95,6 +138,8 @@ impl Build {
         let mut is_thread_safety_enabled = false;
         let mut php_api = None;
         let mut zend_api = None;
+        #[cfg(target_family = "windows")]
+        let mut architecture = Err(InstallationError::FailedToRetrieveArch);
 
         for line in information.lines() {
             if line.contains("Thread Safety =>") {
@@ -105,6 +150,14 @@ impl Build {
                 zend_api = line.get(18..).and_then(|s| s.parse::<u32>().ok());
             } else if line.contains("PHP Extension =>") {
                 php_api = line.get(17..).and_then(|s| s.parse::<u32>().ok());
+            } else {
+                #[cfg(target_family = "windows")]
+                if line.contains("Architecture =>") {
+                    architecture = line
+                        .get(16..)
+                        .ok_or(InstallationError::FailedToRetrieveArch)
+                        .and_then(|s| TryInto::<Architecture>::try_into(s));
+                }
             }
         }
 
@@ -116,6 +169,8 @@ impl Build {
             is_thread_safety_enabled,
             php_api: php_api.ok_or(InstallationError::FailedToRetrieveAPIVersion)?,
             zend_api: zend_api.ok_or(InstallationError::FailedToRetrieveAPIVersion)?,
+            #[cfg(target_family = "windows")]
+            architecture: architecture?,
         })
     }
 
@@ -157,7 +212,7 @@ impl Build {
 
 impl AsRef<Path> for Build {
     fn as_ref(&self) -> &Path {
-        &self.binary.as_path()
+        self.binary.as_path()
     }
 }
 

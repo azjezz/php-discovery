@@ -14,7 +14,8 @@ pub fn discover() -> Result<Vec<build::Build>, error::DiscoveryError> {
 
     discovery::installations_from_env(&mut builds)?;
 
-    #[cfg(target_family = "windows")] {
+    #[cfg(target_family = "windows")]
+    {
         let system_drive: PathBuf = env::var_os("SystemDrive")
             .map(|system_drive_name| format!("{}\\", system_drive_name.to_string_lossy()))
             .map(|system_drive| PathBuf::from(system_drive))
@@ -43,7 +44,8 @@ pub fn discover() -> Result<Vec<build::Build>, error::DiscoveryError> {
         )?;
     }
 
-    #[cfg(not(target_family = "windows"))] {
+    #[cfg(not(target_family = "windows"))]
+    {
         if let Some(home) = env::var_os("HOME") {
             let home: PathBuf = home.into();
 
@@ -53,12 +55,10 @@ pub fn discover() -> Result<Vec<build::Build>, error::DiscoveryError> {
             discovery::scan_dir_for_builds(&mut builds, home.join(".phpenv").join("versions"))?;
         }
 
-        #[cfg(target_os = "macos")] {
+        #[cfg(target_os = "macos")]
+        {
             // MacPorts (/opt/local/sbin/php-fpm71, /opt/local/bin/php71)
-            discovery::scan_dir_for_builds(
-                &mut builds,
-                PathBuf::from("/opt/local"),
-            )?;
+            discovery::scan_dir_for_builds(&mut builds, PathBuf::from("/opt/local"))?;
             // MAMP
             discovery::scan_dir_for_builds(
                 &mut builds,
@@ -66,7 +66,8 @@ pub fn discover() -> Result<Vec<build::Build>, error::DiscoveryError> {
             )?;
         }
 
-        #[cfg(target_os = "linux")] {
+        #[cfg(target_os = "linux")]
+        {
             // Ondrej PPA on Linux (bin/php7.2)
             discovery::scan_dir_for_builds(&mut builds, PathBuf::from("/usr"))?;
             // Remi's RPM repository

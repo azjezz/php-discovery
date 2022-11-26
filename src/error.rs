@@ -8,6 +8,8 @@ pub enum InstallationError {
     BinaryIsNotExecutable(PathBuf),
     CommandError(Error),
     FailedToRetrieveAPIVersion,
+    #[cfg(target_family = "windows")]
+    FailedToRetrieveArch,
 }
 
 #[derive(Debug)]
